@@ -10,6 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { User } from './interfaces/user.interface';
 import { CreateUserDto } from './dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Controller('users')
 export class UsersController {
@@ -26,7 +27,10 @@ export class UsersController {
   }
 
   @Post('register')
-  createPublisher(@Body() createUserDto: CreateUserDto): Promise<User> {
+  async createPublisher(@Body() createUserDto: CreateUserDto): Promise<User> {
+    createUserDto.role = 'publisher';
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    createUserDto.password = hashedPassword;
     return this.usersService.createUser(createUserDto);
   }
 }
