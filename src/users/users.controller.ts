@@ -23,7 +23,7 @@ export class UsersController {
 
   @Get('getOnePublisher/:id')
   getOnePublisher(@Param('id') id): Promise<User> {
-    return this.usersService.findOneUser(id);
+    return this.usersService.findOne({ _id: id });
   }
 
   @Post('register')
