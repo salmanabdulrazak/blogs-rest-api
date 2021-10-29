@@ -7,6 +7,7 @@ import {
   Param,
   Body,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './interfaces/user.interface';
@@ -25,7 +26,6 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('getAllPublishers')
   getAllPublishers(@GetCurrentUser() user: any): Promise<User[]> {
-    // console.log({ user });
     return this.usersService.findAllUsers();
   }
 
@@ -36,9 +36,17 @@ export class UsersController {
 
   @Post('register')
   async createPublisher(@Body() createUserDto: CreateUserDto): Promise<User> {
+    const isExist = await this.usersService.findOne({
+      email: createUserDto.email,
+    });
+
+    if (isExist) throw new BadRequestException('Email id already exists!');
+
     createUserDto.role = 'publisher';
+
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     createUserDto.password = hashedPassword;
+
     return this.usersService.createUser(createUserDto);
   }
 }
