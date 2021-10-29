@@ -27,10 +27,12 @@ export class UsersController {
   @hasRole('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('getAllPublishers')
-  getAllPublishers(@GetCurrentUser() user: any): Promise<User[]> {
-    return this.usersService.findAllUsers();
+  getAllPublishers(): Promise<User[]> {
+    return this.usersService.findAllUsers({ role: { $ne: 'admin' } });
   }
 
+  @hasRole('admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('getOnePublisher/:id')
   getOnePublisher(@Param('id') id): Promise<User> {
     return this.usersService.findOne({ _id: id });

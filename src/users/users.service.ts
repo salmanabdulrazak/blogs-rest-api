@@ -7,12 +7,12 @@ import { InjectModel } from '@nestjs/mongoose';
 export class UsersService {
   constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
 
-  async findAllUsers(): Promise<User[]> {
-    return await this.userModel.find();
+  async findAllUsers(condition: any): Promise<User[]> {
+    return await this.userModel.find(condition, '-password -__v');
   }
 
   async findOne(condition: any): Promise<User> {
-    return await this.userModel.findOne(condition);
+    return await this.userModel.findOne(condition, '-__v');
   }
 
   async createUser(user: User): Promise<User> {
