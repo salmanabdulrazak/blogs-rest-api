@@ -8,6 +8,8 @@ import {
   Body,
   UseGuards,
   BadRequestException,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './interfaces/user.interface';
@@ -35,6 +37,7 @@ export class UsersController {
   }
 
   @Post('register')
+  @UsePipes(new ValidationPipe())
   async createPublisher(@Body() createUserDto: CreateUserDto): Promise<User> {
     const isExist = await this.usersService.findOne({
       email: createUserDto.email,
