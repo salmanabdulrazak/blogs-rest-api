@@ -27,20 +27,38 @@ export class UsersController {
   @hasRole('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('getAllPublishers')
-  getAllPublishers(): Promise<User[]> {
-    return this.usersService.findAllUsers({ role: { $ne: 'admin' } });
+  async getAllPublishers(): Promise<any> {
+    let data: any = await this.usersService.findAllUsers({
+      role: { $ne: 'admin' },
+    });
+
+    const result = {
+      message: 'Publishers List!',
+      data,
+    };
+
+    return result;
   }
 
   @hasRole('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('getOnePublisher/:id')
-  getOnePublisher(@Param('id') id): Promise<User> {
-    return this.usersService.findOne({ _id: id });
+  async getOnePublisher(@Param('id') id): Promise<any> {
+    let data: any = await this.usersService.findOne({ _id: id });
+
+    if (!data) throw new BadRequestException('Invalid id!');
+
+    const result = {
+      message: 'Publisher Details!',
+      data,
+    };
+
+    return result;
   }
 
   @Post('signup')
   @UsePipes(new ValidationPipe())
-  async createPublisher(@Body() createUserDto: CreateUserDto): Promise<User> {
+  async createPublisher(@Body() createUserDto: CreateUserDto): Promise<any> {
     const isExist = await this.usersService.findOne({
       email: createUserDto.email,
     });
@@ -52,6 +70,16 @@ export class UsersController {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     createUserDto.password = hashedPassword;
 
-    return this.usersService.createUser(createUserDto);
+    let data: any = await this.usersService.createUser(createUserDto);
+
+    data = data.toObject();
+    delete data.password;
+
+    const result = {
+      message: 'Sign Up Successfull!',
+      data,
+    };
+
+    return result;
   }
 }
