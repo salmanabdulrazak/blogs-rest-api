@@ -38,7 +38,7 @@ export class UsersController {
     return this.usersService.findOne({ _id: id });
   }
 
-  @Post('register')
+  @Post('signup')
   @UsePipes(new ValidationPipe())
   async createPublisher(@Body() createUserDto: CreateUserDto): Promise<User> {
     const isExist = await this.usersService.findOne({
