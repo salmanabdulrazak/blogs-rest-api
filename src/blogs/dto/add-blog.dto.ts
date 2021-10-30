@@ -1,6 +1,6 @@
 import { IsDefined, IsNotEmpty, IsString } from 'class-validator';
 
-export class AddCategoryDto {
+export class AddBlogDto {
   @IsString()
   @IsDefined()
   @IsNotEmpty()
@@ -16,8 +16,5 @@ export class AddCategoryDto {
   @IsNotEmpty()
   categoryId: string;
 
-  @IsString()
-  @IsDefined()
-  @IsNotEmpty()
   publisherId: string;
 }

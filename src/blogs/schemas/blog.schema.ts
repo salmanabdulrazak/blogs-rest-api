@@ -8,14 +8,19 @@ export const BlogSchema = new mongoose.Schema({
   publisherId: ObjectId,
 });
 
+BlogSchema.set('toObject', { virtuals: true });
+BlogSchema.set('toJSON', { virtuals: true });
+
 BlogSchema.virtual('category', {
   ref: 'Category',
-  localField: '_id',
-  foreignField: 'categoryId',
+  localField: 'categoryId',
+  foreignField: '_id',
+  justOne: true,
 });
 
-BlogSchema.virtual('isCompleted', {
+BlogSchema.virtual('publisher', {
   ref: 'User',
-  localField: '_id',
-  foreignField: 'publisherId',
+  localField: 'publisherId',
+  foreignField: '_id',
+  justOne: true,
 });

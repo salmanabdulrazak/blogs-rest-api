@@ -12,7 +12,7 @@ export class AuthService {
   ) {}
 
   async login(authDto: AuthDto) {
-    const user = await this.usersService.findOne({ email: authDto.email });
+    let user: any = await this.usersService.findOne({ email: authDto.email });
 
     if (!user) throw new UnauthorizedException('Invalid Credentials!');
 
@@ -25,9 +25,13 @@ export class AuthService {
       role: user.role,
     });
 
+    user = user.toObject();
+    delete user.password;
+
     const result = {
       message: 'Login Successfull!',
       access_token,
+      user,
     };
 
     return result;
