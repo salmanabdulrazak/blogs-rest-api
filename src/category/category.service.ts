@@ -21,4 +21,14 @@ export class CategoryService {
     const newCategory = new this.categoryModel(category);
     return await newCategory.save();
   }
+
+  async deleteOne(id: string): Promise<Category> {
+    return await this.categoryModel.findByIdAndRemove(id);
+  }
+
+  async update(id: string, category: Category): Promise<Category> {
+    return await this.categoryModel.findByIdAndUpdate(id, category, {
+      new: true,
+    });
+  }
 }

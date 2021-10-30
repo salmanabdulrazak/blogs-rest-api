@@ -2,9 +2,11 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
+  Put,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -14,7 +16,6 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { hasRole } from 'src/utils/has-role.decorator';
 import { AddCategoryDto } from './add-category.dto';
 import { CategoryService } from './category.service';
-import { Category } from './interfaces/category.interface';
 
 @Controller('category')
 export class CategoryController {
@@ -66,6 +67,51 @@ export class CategoryController {
     const result = {
       message: 'Category created successfully!',
       data,
+    };
+
+    return result;
+  }
+
+  @hasRole('admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Put('update/:id')
+  @UsePipes(new ValidationPipe())
+  async updateCategory(
+    @Body() updateCategoryDto: AddCategoryDto,
+    @Param('id') id,
+  ): Promise<any> {
+    let checkId: any = await this.categoryService.findOne({ _id: id });
+    if (!checkId) throw new BadRequestException('Invalid id!');
+
+    const isExist = await this.categoryService.findOne({
+      name: updateCategoryDto.name,
+      _id: { $ne: id },
+    });
+    if (isExist)
+      throw new BadRequestException('Another category already exists!');
+
+    let data: any = await this.categoryService.update(id, updateCategoryDto);
+
+    const result = {
+      message: 'Category updated successfully!',
+      data,
+    };
+
+    return result;
+  }
+
+  @hasRole('admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Delete('delete/:id')
+  async deleteCategory(@Param('id') id) {
+    let checkId: any = await this.categoryService.findOne({ _id: id });
+    if (!checkId) throw new BadRequestException('Invalid id!');
+
+    await this.categoryService.deleteOne(id);
+
+    const result = {
+      message: 'Category deleted successfully!',
+      data: [],
     };
 
     return result;
