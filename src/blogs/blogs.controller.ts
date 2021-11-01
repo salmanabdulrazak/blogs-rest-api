@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { User } from 'src/users/interfaces/user.interface';
+import { CategoryService } from 'src/category/category.service';
 import { GetCurrentUser } from 'src/utils/get-user.decorator';
 import { hasRole } from 'src/utils/has-role.decorator';
 import { BlogsService } from './blogs.service';
@@ -21,7 +21,10 @@ import { AddBlogDto } from './dto/add-blog.dto';
 
 @Controller('blogs')
 export class BlogsController {
-  constructor(private readonly blogsService: BlogsService) {}
+  constructor(
+    private readonly blogsService: BlogsService,
+    private readonly categoryService: CategoryService,
+  ) {}
 
   @hasRole('all')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -69,6 +72,11 @@ export class BlogsController {
     @Body() addBlogDto: AddBlogDto,
     @GetCurrentUser() user: any,
   ): Promise<any> {
+    let checkCategory: any = await this.categoryService.findOne({
+      _id: addBlogDto.categoryId,
+    });
+    if (!checkCategory) throw new BadRequestException('Invalid category!');
+
     addBlogDto.publisherId = user.sub;
 
     let data: any = await this.blogsService.create(addBlogDto);
@@ -94,6 +102,11 @@ export class BlogsController {
 
     let checkId: any = await this.blogsService.findOne(condition);
     if (!checkId) throw new BadRequestException('Invalid id!');
+
+    let checkCategory: any = await this.categoryService.findOne({
+      _id: updateBlogDto.categoryId,
+    });
+    if (!checkCategory) throw new BadRequestException('Invalid category!');
 
     let data: any = await this.blogsService.update(id, updateBlogDto);
 
