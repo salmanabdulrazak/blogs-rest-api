@@ -2,9 +2,11 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
+  Put,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -74,6 +76,49 @@ export class BlogsController {
     const result = {
       message: 'Blog created successfully!',
       data,
+    };
+
+    return result;
+  }
+
+  @hasRole('publisher')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Put('update/:id')
+  @UsePipes(new ValidationPipe())
+  async updateBlog(
+    @Body() updateBlogDto: AddBlogDto,
+    @Param('id') id,
+    @GetCurrentUser() user: any,
+  ): Promise<any> {
+    let condition: any = { _id: id, publisherId: user.sub };
+
+    let checkId: any = await this.blogsService.findOne(condition);
+    if (!checkId) throw new BadRequestException('Invalid id!');
+
+    let data: any = await this.blogsService.update(id, updateBlogDto);
+
+    const result = {
+      message: 'Blog updated successfully!',
+      data,
+    };
+
+    return result;
+  }
+
+  @hasRole('publisher')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Delete('delete/:id')
+  async deleteCategory(@Param('id') id, @GetCurrentUser() user: any) {
+    let condition: any = { _id: id, publisherId: user.sub };
+
+    let checkId: any = await this.blogsService.findOne(condition);
+    if (!checkId) throw new BadRequestException('Invalid id!');
+
+    await this.blogsService.deleteOne(id);
+
+    const result = {
+      message: 'Blog deleted successfully!',
+      data: [],
     };
 
     return result;

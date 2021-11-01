@@ -25,4 +25,14 @@ export class BlogsService {
     const newBlog = new this.blogModel(blog);
     return await newBlog.save();
   }
+
+  async deleteOne(id: string): Promise<Blog> {
+    return await this.blogModel.findByIdAndRemove(id);
+  }
+
+  async update(id: string, blog: Blog): Promise<Blog> {
+    return await this.blogModel.findByIdAndUpdate(id, blog, {
+      new: true,
+    });
+  }
 }
