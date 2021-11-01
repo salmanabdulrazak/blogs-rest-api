@@ -11,6 +11,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { CategoryService } from 'src/category/category.service';
@@ -28,6 +29,7 @@ export class BlogsController {
 
   @hasRole('all')
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
   @Get('getAll')
   async getAllBlogs(@GetCurrentUser() user: any): Promise<any> {
     let condition: any = {};
@@ -46,6 +48,7 @@ export class BlogsController {
 
   @hasRole('all')
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
   @Get('getOne/:id')
   async getOneBlog(@Param('id') id, @GetCurrentUser() user: any): Promise<any> {
     let condition: any = { _id: id };
@@ -66,6 +69,7 @@ export class BlogsController {
 
   @hasRole('publisher')
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
   @Post('add')
   @UsePipes(new ValidationPipe())
   async addBlog(
@@ -91,6 +95,7 @@ export class BlogsController {
 
   @hasRole('publisher')
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
   @Put('update/:id')
   @UsePipes(new ValidationPipe())
   async updateBlog(
@@ -120,6 +125,7 @@ export class BlogsController {
 
   @hasRole('publisher')
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
   @Delete('delete/:id')
   async deleteCategory(@Param('id') id, @GetCurrentUser() user: any) {
     let condition: any = { _id: id, publisherId: user.sub };

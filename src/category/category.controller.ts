@@ -17,6 +17,7 @@ import { hasRole } from 'src/utils/has-role.decorator';
 import { AddCategoryDto } from './dto/add-category.dto';
 import { CategoryService } from './category.service';
 import { BlogsService } from 'src/blogs/blogs.service';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('category')
 export class CategoryController {
@@ -27,6 +28,7 @@ export class CategoryController {
 
   @hasRole('all')
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
   @Get('getAll')
   async getAllCategories(): Promise<any> {
     let data: any = await this.categoryService.findAll({});
@@ -41,6 +43,7 @@ export class CategoryController {
 
   @hasRole('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
   @Get('getOne/:id')
   async getOneCategory(@Param('id') id): Promise<any> {
     let data: any = await this.categoryService.findOne({ _id: id });
@@ -57,6 +60,7 @@ export class CategoryController {
 
   @hasRole('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
   @Post('add')
   @UsePipes(new ValidationPipe())
   async addCategory(@Body() addCategoryDto: AddCategoryDto): Promise<any> {
@@ -78,6 +82,7 @@ export class CategoryController {
 
   @hasRole('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
   @Put('update/:id')
   @UsePipes(new ValidationPipe())
   async updateCategory(
@@ -106,6 +111,7 @@ export class CategoryController {
 
   @hasRole('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
   @Delete('delete/:id')
   async deleteCategory(@Param('id') id) {
     let checkId: any = await this.categoryService.findOne({ _id: id });

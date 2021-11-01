@@ -2,8 +2,6 @@ import {
   Controller,
   Get,
   Post,
-  Put,
-  Delete,
   Param,
   Body,
   UseGuards,
@@ -12,13 +10,12 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { User } from './interfaces/user.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { GetCurrentUser } from 'src/utils/get-user.decorator';
 import { hasRole } from 'src/utils/has-role.decorator';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
@@ -26,6 +23,7 @@ export class UsersController {
 
   @hasRole('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
   @Get('getAllPublishers')
   async getAllPublishers(): Promise<any> {
     let data: any = await this.usersService.findAllUsers({
@@ -42,6 +40,7 @@ export class UsersController {
 
   @hasRole('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
   @Get('getOnePublisher/:id')
   async getOnePublisher(@Param('id') id): Promise<any> {
     let data: any = await this.usersService.findOne({ _id: id });
