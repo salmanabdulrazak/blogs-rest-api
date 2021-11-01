@@ -30,6 +30,10 @@ export class BlogsService {
     return await this.blogModel.findByIdAndRemove(id);
   }
 
+  async delete(condition: any): Promise<any> {
+    return await this.blogModel.deleteMany(condition);
+  }
+
   async update(id: string, blog: Blog): Promise<Blog> {
     return await this.blogModel.findByIdAndUpdate(id, blog, {
       new: true,

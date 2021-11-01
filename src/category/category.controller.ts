@@ -16,10 +16,14 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { hasRole } from 'src/utils/has-role.decorator';
 import { AddCategoryDto } from './dto/add-category.dto';
 import { CategoryService } from './category.service';
+import { BlogsService } from 'src/blogs/blogs.service';
 
 @Controller('category')
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(
+    private readonly categoryService: CategoryService,
+    private readonly blogsService: BlogsService,
+  ) {}
 
   @hasRole('all')
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -108,6 +112,10 @@ export class CategoryController {
     if (!checkId) throw new BadRequestException('Invalid id!');
 
     await this.categoryService.deleteOne(id);
+
+    //delete all blogs under this category
+    //should warn admin about this
+    await this.blogsService.delete({ categoryId: id });
 
     const result = {
       message: 'Category deleted successfully!',
